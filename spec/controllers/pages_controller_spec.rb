@@ -51,4 +51,16 @@ render_views
     end
   end
 
+  describe "GET 'help'" do
+    it "should be successful" do
+      get 'help'
+      response.should be_success
+    end
+    
+    it "should have the right title" do
+      get 'help'
+      response.should have_selector("title", :content => "#{@base_title} | Help")
+    end
+  end
+
 end
