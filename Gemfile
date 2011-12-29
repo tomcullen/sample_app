@@ -32,6 +32,7 @@ group :assets do
 end
 
 gem 'jquery-rails'
+gem 'gravatar_image_tag'
 
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
