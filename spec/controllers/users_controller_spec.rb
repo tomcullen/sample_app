@@ -18,6 +18,10 @@ describe "GET 'index'" do
       @user = test_sign_in(Factory(:user))
       Factory(:user, :email => "another@example.com")
       Factory(:user, :email => "another@example.net")
+      
+      30.times do
+        Factory(:user, email: Factory.next(:email))
+      end
     end
     
     it "should be successful" do
@@ -27,14 +31,22 @@ describe "GET 'index'" do
     
     it "should have the right title" do
       get :index
-      response.should have_selector('title', :contect => "All users")
+      response.should have_selector('title', :content => "All users")
     end
     
     it "should have an element for each user" do
       get :index
-      User.all.each do |user|
-        response.should have_selector('li', :contect => user.name)
+      User.paginate(:page => 1).each do |user|
+        response.should have_selector('li', :content => user.name)
       end
+    end
+    
+    it "should paginate users" do
+      get :index
+      response.should have_selector('div.pagination')
+      response.should have_selector('span.disabled', content: "Previous")
+      response.should have_selector('a', href: "/users?page=2", content: "2")
+      response.should have_selector('a', href: "/users?page=2", content: "Next")
     end
   end
 end
@@ -237,18 +249,18 @@ end
     describe "for signed-in-users" do
       
       before(:each) do
-        wrong_user = Factory(:user, :email => "suer@example.net")
+        wrong_user = Factory(:user, :email => "user@example.net")
         test_sign_in(wrong_user)
       end
       
       it "should require matching users for 'edit'" do
          get :edit, id: @user
-          response.should redirect_to(signin_path)
+          response.should redirect_to(root_path)
       end
 
       it "should require matching users for 'update'" do
          get :update, id: @user, user: {}
-          response.should redirect_to(signin_path)
+          response.should redirect_to(root_path)
       end
         
       
