@@ -21,7 +21,7 @@ end
 
 group :production do
   gem 'pg'
-  # gem 'faker'
+  gem 'faker'
 end
 
 
