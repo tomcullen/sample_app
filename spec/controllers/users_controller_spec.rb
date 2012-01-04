@@ -73,7 +73,7 @@ end
     end
     
     it "should be successful" do
-      get :show, :id => @user.id
+      get :show, :id => @user
       response.should be_success
     end
     
@@ -99,6 +99,26 @@ end
       get :show, :id => @user
       response.should have_selector('td>a', :content => user_path(@user), :href => user_path(@user))
     end  
+    
+    it "should show the users microposts" do
+      mp1 = Factory(:micropost, user: @user, content: "Foo bar")
+      mp2 = Factory(:micropost, user: @user, content: "Baz quux")
+      get :show, id: @user
+      response.should have_selector('span.content', content: mp1.content)
+      response.should have_selector('span.content', content: mp2.content)
+    end
+    
+    it "should paginate microposts" do
+      35.times {Factory(:micropost, user: @user, content: "foo")}
+      get :show, id: @user
+      response.should have_selector('div.pagination')
+    end
+    
+    it "should display the micropost count" do
+      10.times {Factory(:micropost, user: @user, content: "foo")}
+      get :show, id: @user
+      response.should have_selector('td.sidebar', content: @user.microposts.count.to_s)
+    end
     
   end
     
